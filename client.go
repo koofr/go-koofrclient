@@ -43,7 +43,7 @@ func (c *KoofrClient) GetToken() string {
 	return c.token
 }
 
-func (c *KoofrClient) Authorize(email string, password string) (err error) {
+func (c *KoofrClient) Authenticate(email string, password string) (err error) {
 	var tokenResponse Token
 
 	tokenRequest := TokenRequest{
