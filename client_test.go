@@ -17,7 +17,7 @@ var _ = Describe("Client", func() {
 	It("should create client and authorize", func() {
 		c := k.NewKoofrClient(apiBase, true)
 		Expect(c).NotTo(BeNil())
-		err := c.Authorize(email, password)
+		err := c.Authenticate(email, password)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(c.GetToken()).To(HaveLen(36))
 	})

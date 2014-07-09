@@ -36,7 +36,7 @@ func TestKoofrclient(t *testing.T) {
 
 	client = k.NewKoofrClient(apiBase, true)
 
-	err := client.Authorize(email, password)
+	err := client.Authenticate(email, password)
 
 	if err != nil {
 		t.Fatal("Koofr authorization failed")
