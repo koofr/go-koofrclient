@@ -71,22 +71,23 @@ var _ = Describe("ClientFiles", func() {
 	})
 
 	It("should put file, get it and delete it", func() {
-		_ = client.FilesDelete(defaultMountId, "/file.txt") // cleanup
+		// the \n is there to test for a regression wrt non-printable filenames
+		_ = client.FilesDelete(defaultMountId, "/file\n.txt") // cleanup
 
-		newName, err := client.FilesPut(defaultMountId, "/", "file.txt", bytes.NewReader([]byte("content")))
+		newName, err := client.FilesPut(defaultMountId, "/", "file\n.txt", bytes.NewReader([]byte("content")))
 		Expect(err).NotTo(HaveOccurred())
-		Expect(newName).To(Equal("file.txt"))
-		reader, err := client.FilesGet(defaultMountId, "/file.txt")
+		Expect(newName).To(Equal("file\n.txt"))
+		reader, err := client.FilesGet(defaultMountId, "/file\n.txt")
 		Expect(err).NotTo(HaveOccurred())
 		content, err := ioutil.ReadAll(reader)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(content).To(Equal([]byte("content")))
-		reader, err = client.FilesGetRange(defaultMountId, "/file.txt", &k.FileSpan{Start: 2, End: 3})
+		reader, err = client.FilesGetRange(defaultMountId, "/file\n.txt", &k.FileSpan{Start: 2, End: 3})
 		Expect(err).NotTo(HaveOccurred())
 		content, err = ioutil.ReadAll(reader)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(content).To(Equal([]byte("nt")))
-		err = client.FilesDelete(defaultMountId, "/file.txt")
+		err = client.FilesDelete(defaultMountId, "/file\n.txt")
 		Expect(err).NotTo(HaveOccurred())
 	})
 })

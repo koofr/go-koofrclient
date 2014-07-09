@@ -189,6 +189,7 @@ func (c *KoofrClient) FilesGet(mountId string, path string) (reader io.ReadClose
 func (c *KoofrClient) FilesPut(mountId string, path string, name string, reader io.Reader) (newName string, err error) {
 	params := url.Values{}
 	params.Set("path", path)
+	params.Set("filename", name)
 
 	respData := []FileUpload{}
 
@@ -201,7 +202,7 @@ func (c *KoofrClient) FilesPut(mountId string, path string, name string, reader 
 		RespValue:      &respData,
 	}
 
-	err = request.UploadFile("file", name, reader)
+	err = request.UploadFile("file", "dummy", reader)
 
 	if err != nil {
 		return
