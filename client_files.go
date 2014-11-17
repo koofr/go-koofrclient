@@ -168,7 +168,11 @@ func (c *KoofrClient) FilesGetRange(mountId string, path string, span *FileSpan)
 	}
 
 	if span != nil {
-		request.Headers.Set("Range", fmt.Sprintf("bytes=%d-%d", span.Start, span.End))
+		if span.End == -1 {
+			request.Headers.Set("Range", fmt.Sprintf("bytes=%d-", span.Start))
+		} else {
+			request.Headers.Set("Range", fmt.Sprintf("bytes=%d-%d", span.Start, span.End))
+		}
 	}
 
 	res, err := c.Request(&request)
