@@ -124,6 +124,7 @@ type FileInfo struct {
 	Size        int64  `json:"size"`
 	ContentType string `json:"contentType"`
 	Path        string `json:"path"`
+	Hash        string `json:"hash"`
 }
 
 type FileTree struct {
