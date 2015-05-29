@@ -25,6 +25,7 @@ type Mount struct {
 	Id          string           `json:"id"`
 	Name        string           `json:"name"`
 	Type        MountType        `json:"type"`
+	Origin      string           `json:"origin"`
 	SpaceTotal  int64            `json:"spaceTotal"`
 	SpaceUsed   int64            `json:"spaceUsed"`
 	Online      bool             `json:"online"`
