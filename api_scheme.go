@@ -118,6 +118,19 @@ type FileUpload struct {
 	Name string `json:"name"`
 }
 
+type PutFilter struct {
+	Modified *int64
+	Size     *int64
+	Hash     *string
+}
+
+type DeleteFilter struct {
+	Modified *int64
+	Size     *int64
+	Hash     *string
+	IfEmpty  bool
+}
+
 type FileInfo struct {
 	Name        string `json:"name"`
 	Type        string `json:"type"`

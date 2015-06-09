@@ -2,11 +2,12 @@ package koofrclient
 
 import (
 	"fmt"
-	"github.com/koofr/go-httpclient"
 	"io"
 	"net/http"
 	"net/url"
 	"path"
+
+	"github.com/koofr/go-httpclient"
 )
 
 func (c *KoofrClient) FilesInfo(mountId string, path string) (info FileInfo, err error) {
@@ -76,8 +77,31 @@ func (c *KoofrClient) FilesTree(mountId string, path string) (tree FileTree, err
 }
 
 func (c *KoofrClient) FilesDelete(mountId string, path string) (err error) {
+	return c.filesDelete(mountId, path, nil)
+}
+
+func (c *KoofrClient) FilesDeleteIf(mountId string, path string, deleteFilter *DeleteFilter) (err error) {
+	return c.filesDelete(mountId, path, deleteFilter)
+}
+
+func (c *KoofrClient) filesDelete(mountId string, path string, deleteFilter *DeleteFilter) (err error) {
 	params := url.Values{}
 	params.Set("path", path)
+
+	if deleteFilter != nil {
+		if deleteFilter.Size != nil {
+			params.Set("removeIfSize", fmt.Sprintf("%d", deleteFilter.Size))
+		}
+		if deleteFilter.Modified != nil {
+			params.Set("removeIfModified", fmt.Sprintf("%d", deleteFilter.Modified))
+		}
+		if deleteFilter.Hash != nil {
+			params.Set("removeIfHash", fmt.Sprintf("%s", deleteFilter.Modified))
+		}
+		if deleteFilter.IfEmpty {
+			params.Set("removeIfEmpty", "")
+		}
+	}
 
 	request := httpclient.RequestData{
 		Method:         "DELETE",
@@ -191,11 +215,27 @@ func (c *KoofrClient) FilesGet(mountId string, path string) (reader io.ReadClose
 }
 
 func (c *KoofrClient) FilesPut(mountId string, path string, name string, reader io.Reader) (newName string, err error) {
+	info, err := c.FilesPutOptions(mountId, path, name, reader, nil)
+	return info.Name, err
+}
+
+func (c *KoofrClient) FilesPutOptions(mountId string, path string, name string, reader io.Reader, putFilter *PutFilter) (fileInfo *FileInfo, err error) {
 	params := url.Values{}
 	params.Set("path", path)
 	params.Set("filename", name)
+	params.Set("info", "true")
 
-	respData := []FileUpload{}
+	if putFilter != nil {
+		if putFilter.Size != nil {
+			params.Set("overwriteIfSize", fmt.Sprintf("%d", *putFilter.Size))
+		}
+		if putFilter.Modified != nil {
+			params.Set("overwriteIfModified", fmt.Sprintf("%d", *putFilter.Modified))
+		}
+		if putFilter.Hash != nil {
+			params.Set("overwriteIfHash", fmt.Sprintf("%s", *putFilter.Hash))
+		}
+	}
 
 	request := httpclient.RequestData{
 		Method:         "POST",
@@ -203,7 +243,7 @@ func (c *KoofrClient) FilesPut(mountId string, path string, name string, reader 
 		Params:         params,
 		ExpectedStatus: []int{http.StatusOK},
 		RespEncoding:   httpclient.EncodingJSON,
-		RespValue:      &respData,
+		RespValue:      &fileInfo,
 	}
 
 	err = request.UploadFile("file", "dummy", reader)
@@ -217,8 +257,6 @@ func (c *KoofrClient) FilesPut(mountId string, path string, name string, reader 
 	if err != nil {
 		return
 	}
-
-	newName = respData[0].Name
 
 	return
 }
