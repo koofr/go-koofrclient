@@ -10,6 +10,8 @@ import (
 	"github.com/koofr/go-httpclient"
 )
 
+var ErrCannotOverwrite = fmt.Errorf("Can not overwrite")
+
 func (c *KoofrClient) FilesInfo(mountId string, path string) (info FileInfo, err error) {
 	params := url.Values{}
 	params.Set("path", path)
@@ -235,6 +237,9 @@ func (c *KoofrClient) FilesPutOptions(mountId string, path string, name string, 
 		if putFilter.Hash != nil {
 			params.Set("overwriteIfHash", fmt.Sprintf("%s", *putFilter.Hash))
 		}
+		if putFilter.IgnoreNonExisting {
+			params.Set("overwriteIgnoreNonexisting", "")
+		}
 	}
 
 	request := httpclient.RequestData{
@@ -255,7 +260,15 @@ func (c *KoofrClient) FilesPutOptions(mountId string, path string, name string, 
 	_, err = c.Request(&request)
 
 	if err != nil {
-		return
+
+		switch err := err.(type) {
+		case httpclient.InvalidStatusError:
+			if err.Got == http.StatusConflict {
+				return nil, ErrCannotOverwrite
+			}
+		default:
+			return nil, err
+		}
 	}
 
 	return

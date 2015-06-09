@@ -119,9 +119,10 @@ type FileUpload struct {
 }
 
 type PutFilter struct {
-	Modified *int64
-	Size     *int64
-	Hash     *string
+	Modified          *int64
+	Size              *int64
+	Hash              *string
+	IgnoreNonExisting bool
 }
 
 type DeleteFilter struct {
