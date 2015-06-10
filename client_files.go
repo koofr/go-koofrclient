@@ -10,7 +10,8 @@ import (
 	"github.com/koofr/go-httpclient"
 )
 
-var ErrCannotOverwrite = fmt.Errorf("Can not overwrite")
+var ErrCannotOverwrite = fmt.Errorf("Can not overwrite (filter constraint fails)")
+var ErrCannotRemove = fmt.Errorf("Can not remove (filter constraint fails)")
 
 func (c *KoofrClient) FilesInfo(mountId string, path string) (info FileInfo, err error) {
 	params := url.Values{}
@@ -92,13 +93,13 @@ func (c *KoofrClient) filesDelete(mountId string, path string, deleteFilter *Del
 
 	if deleteFilter != nil {
 		if deleteFilter.Size != nil {
-			params.Set("removeIfSize", fmt.Sprintf("%d", deleteFilter.Size))
+			params.Set("removeIfSize", fmt.Sprintf("%d", *deleteFilter.Size))
 		}
 		if deleteFilter.Modified != nil {
-			params.Set("removeIfModified", fmt.Sprintf("%d", deleteFilter.Modified))
+			params.Set("removeIfModified", fmt.Sprintf("%d", *deleteFilter.Modified))
 		}
 		if deleteFilter.Hash != nil {
-			params.Set("removeIfHash", fmt.Sprintf("%s", deleteFilter.Modified))
+			params.Set("removeIfHash", fmt.Sprintf("%s", *deleteFilter.Hash))
 		}
 		if deleteFilter.IfEmpty {
 			params.Set("removeIfEmpty", "")
@@ -114,6 +115,18 @@ func (c *KoofrClient) filesDelete(mountId string, path string, deleteFilter *Del
 	}
 
 	_, err = c.Request(&request)
+
+	if err != nil {
+		switch err := err.(type) {
+		case httpclient.InvalidStatusError:
+			if err.Got == http.StatusConflict {
+				return ErrCannotRemove
+			}
+		default:
+			return err
+		}
+
+	}
 
 	return
 }
