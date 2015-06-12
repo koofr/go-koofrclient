@@ -253,6 +253,9 @@ func (c *KoofrClient) FilesPutOptions(mountId string, path string, name string, 
 		if putFilter.IgnoreNonExisting {
 			params.Set("overwriteIgnoreNonexisting", "")
 		}
+		if putFilter.NoRename {
+			params.Set("autorename", "false")
+		}
 	}
 
 	request := httpclient.RequestData{

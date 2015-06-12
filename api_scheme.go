@@ -123,6 +123,7 @@ type PutFilter struct {
 	Size              *int64
 	Hash              *string
 	IgnoreNonExisting bool
+	NoRename          bool
 }
 
 type DeleteFilter struct {
