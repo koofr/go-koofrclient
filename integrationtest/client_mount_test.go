@@ -1,4 +1,4 @@
-package koofrclient_test
+package integrationtest_test
 
 import (
 	k "github.com/koofr/go-koofrclient"

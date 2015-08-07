@@ -1,15 +1,14 @@
 package koofrclient
 
 import (
-	"fmt"
-	"github.com/koofr/go-httpclient"
-	"net/http"
 	"net/url"
+
+	"github.com/koofr/go-httpclient"
+	"github.com/koofr/go-koofrclient/auth"
 )
 
 type KoofrClient struct {
 	*httpclient.HTTPClient
-	token string
 }
 
 func NewKoofrClient(baseUrl string, disableSecurity bool) *KoofrClient {
@@ -27,7 +26,7 @@ func NewKoofrClient(baseUrl string, disableSecurity bool) *KoofrClient {
 
 	httpClient.Headers.Set("User-Agent", "go koofrclient")
 
-	return &KoofrClient{httpClient, ""}
+	return &KoofrClient{httpClient}
 }
 
 func (c *KoofrClient) SetUserAgent(ua string) {
@@ -35,40 +34,26 @@ func (c *KoofrClient) SetUserAgent(ua string) {
 }
 
 func (c *KoofrClient) SetToken(token string) {
-	c.token = token
-	c.HTTPClient.Headers.Set("Authorization", fmt.Sprintf("Token token=%s", token))
+	switch t := c.Client.Transport.(type) {
+	case *auth.TokenTransport:
+		t.SetToken(token)
+	}
 }
 
 func (c *KoofrClient) GetToken() string {
-	return c.token
+	switch t := c.Client.Transport.(type) {
+	case *auth.TokenTransport:
+		return t.GetToken()
+	}
+
+	// if not using token transport, return empty string (cannot return error because this would break API)
+	return ""
 }
 
 func (c *KoofrClient) Authenticate(email string, password string) (err error) {
-	var tokenResponse Token
+	return auth.NewTokenAuthProvider(email, password).Authenticate(c.HTTPClient)
+}
 
-	tokenRequest := TokenRequest{
-		Email:    email,
-		Password: password,
-	}
-
-	request := httpclient.RequestData{
-		Method:         "POST",
-		Path:           "/token",
-		Headers:        make(http.Header),
-		ExpectedStatus: []int{http.StatusOK},
-		ReqEncoding:    httpclient.EncodingJSON,
-		ReqValue:       tokenRequest,
-		RespEncoding:   httpclient.EncodingJSON,
-		RespValue:      &tokenResponse,
-	}
-
-	_, err = c.Request(&request)
-
-	if err != nil {
-		return
-	}
-
-	c.SetToken(tokenResponse.Token)
-
-	return
+func (c *KoofrClient) AuthenticateWithProvider(ap auth.AuthProvider) (err error) {
+	return ap.Authenticate(c.HTTPClient)
 }

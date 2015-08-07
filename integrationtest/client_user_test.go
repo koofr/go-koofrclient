@@ -1,4 +1,4 @@
-package koofrclient_test
+package integrationtest_test
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -9,6 +9,6 @@ var _ = Describe("ClientUser", func() {
 	It("should get user info", func() {
 		info, err := client.UserInfo()
 		Expect(err).NotTo(HaveOccurred())
-		Expect(info.Email).To(Equal(email))
+		Expect(info.Email).NotTo(BeEmpty())
 	})
 })

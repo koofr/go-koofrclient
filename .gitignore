@@ -9,3 +9,4 @@
 # developer specific
 *.sublime-workspace
 *.sublime-project
+test.credentials*
