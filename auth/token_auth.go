@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/koofr/go-httpclient"
 )
 
@@ -39,7 +38,6 @@ func (tt *TokenTransport) RoundTrip(req *http.Request) (resp *http.Response, err
 	resp, err = tt.Base.RoundTrip(req)
 
 	if err != nil {
-		spew.Printf("Failed request: %+v\nError: %+v\n", req, err)
 		return
 	}
 
