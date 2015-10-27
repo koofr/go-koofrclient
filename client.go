@@ -70,6 +70,7 @@ func (c *KoofrClient) Authenticate(email string, password string) (err error) {
 
 func (c *KoofrClient) SetAuthProvider(ap auth.AuthProvider) {
 	c.authProvider = ap
+	c.authProvider.SetClient(c.HTTPClient)
 }
 
 func (c *KoofrClient) AuthenticateWithProvider() (err error) {

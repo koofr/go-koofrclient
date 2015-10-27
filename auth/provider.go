@@ -12,5 +12,5 @@ var (
 
 type AuthProvider interface {
 	Authenticate() error
-	setClient(c *httpclient.HTTPClient)
+	SetClient(c *httpclient.HTTPClient)
 }

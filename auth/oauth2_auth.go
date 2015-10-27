@@ -30,7 +30,7 @@ func NewOAuth2Provider(id string, secret string, scopes []string, redirectURL st
 	}
 }
 
-func (op *OAuth2Provider) setClient(c *httpclient.HTTPClient) {
+func (op *OAuth2Provider) SetClient(c *httpclient.HTTPClient) {
 	op.client = c
 	op.config.Endpoint = oauth2.Endpoint{
 		AuthURL:  fmt.Sprintf("%s/oauth2/auth", c.BaseURL.String()),
@@ -72,6 +72,9 @@ func (op *OAuth2Provider) GetAuthURL(state string, opts ...oauth2.AuthCodeOption
 }
 
 func (op *OAuth2Provider) Authenticate() (err error) {
+	if op.client == nil {
+		return NotInitializedErr
+	}
 
 	code := op.obtainCodeFunc(op.config.AuthCodeURL("", oauth2.AccessTypeOffline))
 	op.Exchange(code)

@@ -65,7 +65,9 @@ var _ = BeforeSuite(func() {
 		Fail("Please provide (KOOFR_EMAIL,KOOFR_PASSWORD) or (KOOFR_CLIENT_ID, KOOFR_CLIENT_SECRET)")
 	}
 
-	err := client.AuthenticateWithProvider(ap)
+	client.SetAuthProvider(ap)
+
+	err := client.AuthenticateWithProvider()
 	Expect(err).NotTo(HaveOccurred(), "Auth failed")
 
 	mounts, err := client.Mounts()
