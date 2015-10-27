@@ -1,7 +1,16 @@
 package auth
 
-import "github.com/koofr/go-httpclient"
+import (
+	"fmt"
+
+	"github.com/koofr/go-httpclient"
+)
+
+var (
+	NotInitializedErr = fmt.Errorf("AuthProvider is not initialized")
+)
 
 type AuthProvider interface {
-	Authenticate(client *httpclient.HTTPClient) error
+	Authenticate() error
+	setClient(c *httpclient.HTTPClient)
 }

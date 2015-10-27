@@ -72,7 +72,7 @@ func cloneRequest(r *http.Request) *http.Request {
 
 // TokenAuthProvider provides required credentials to obtain token
 type TokenAuthProvider struct {
-	client        *http.Client
+	client        *httpclient.HTTPClient
 	username      string
 	password      string
 	tokenEndpoint string
@@ -85,26 +85,34 @@ func NewTokenAuthProvider(username string, password string) *TokenAuthProvider {
 	}
 }
 
-// Authenticate wraps provided httpclient.HTTPClient transport with TokenTransport
-func (tap *TokenAuthProvider) Authenticate(c *httpclient.HTTPClient) (err error) {
+func (tap *TokenAuthProvider) setClient(c *httpclient.HTTPClient) {
+	tap.client = c
+	tap.tokenEndpoint = fmt.Sprintf("%s/token", c.BaseURL.String())
+}
 
-	if tap.client == nil {
-		tap.client = c.Client
-	}
-	if tap.tokenEndpoint == "" {
-		tap.tokenEndpoint = fmt.Sprintf("%s/token", c.BaseURL.String())
-	}
+// Authenticate wraps provided httpclient.HTTPClient transport with TokenTransport
+func (tap *TokenAuthProvider) Authenticate() (err error) {
 
 	token, err := tap.obtainToken()
 	if err != nil {
 		return
 	}
 
+	var base http.RoundTripper
+
+	switch transport := tap.client.Client.Transport.(type) {
+	case *TokenTransport:
+		base = transport.Base
+	default:
+		base = transport
+	}
+
 	// wrap it
-	c.Client.Transport = &TokenTransport{
+	tap.client.Client.Transport = &TokenTransport{
 		Provider: tap,
-		Base:     c.Client.Transport,
-		token:    token}
+		Base:     base,
+		token:    token,
+	}
 
 	return
 }

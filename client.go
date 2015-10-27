@@ -1,14 +1,17 @@
 package koofrclient
 
 import (
+	"fmt"
 	"net/url"
 
 	"github.com/koofr/go-httpclient"
 	"github.com/koofr/go-koofrclient/auth"
+	"golang.org/x/oauth2"
 )
 
 type KoofrClient struct {
 	*httpclient.HTTPClient
+	authProvider auth.AuthProvider
 }
 
 func NewKoofrClient(baseUrl string, disableSecurity bool) *KoofrClient {
@@ -26,7 +29,7 @@ func NewKoofrClient(baseUrl string, disableSecurity bool) *KoofrClient {
 
 	httpClient.Headers.Set("User-Agent", "go koofrclient")
 
-	return &KoofrClient{httpClient}
+	return &KoofrClient{httpClient, nil}
 }
 
 func (c *KoofrClient) SetUserAgent(ua string) {
@@ -50,10 +53,29 @@ func (c *KoofrClient) GetToken() string {
 	return ""
 }
 
-func (c *KoofrClient) Authenticate(email string, password string) (err error) {
-	return auth.NewTokenAuthProvider(email, password).Authenticate(c.HTTPClient)
+func (c *KoofrClient) GetOAuth2Token() (*oauth2.Token, error) {
+	switch t := c.Client.Transport.(type) {
+	case *oauth2.Transport:
+		return t.Source.Token()
+	}
+
+	return nil, fmt.Errorf("Not using oauth2")
 }
 
-func (c *KoofrClient) AuthenticateWithProvider(ap auth.AuthProvider) (err error) {
-	return ap.Authenticate(c.HTTPClient)
+func (c *KoofrClient) Authenticate(email string, password string) (err error) {
+	p := auth.NewTokenAuthProvider(email, password)
+	c.SetAuthProvider(p)
+	return p.Authenticate()
+}
+
+func (c *KoofrClient) SetAuthProvider(ap auth.AuthProvider) {
+	c.authProvider = ap
+}
+
+func (c *KoofrClient) AuthenticateWithProvider() (err error) {
+	if c.authProvider == nil {
+		return fmt.Errorf("No provider")
+	}
+
+	return c.authProvider.Authenticate()
 }
