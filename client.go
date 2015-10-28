@@ -73,6 +73,10 @@ func (c *KoofrClient) SetAuthProvider(ap auth.AuthProvider) {
 	c.authProvider.SetClient(c.HTTPClient)
 }
 
+func (c *KoofrClient) GetAuthProvider() auth.AuthProvider {
+	return c.authProvider
+}
+
 func (c *KoofrClient) AuthenticateWithProvider() (err error) {
 	if c.authProvider == nil {
 		return fmt.Errorf("No provider")
