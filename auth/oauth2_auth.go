@@ -63,6 +63,13 @@ func (op *OAuth2Provider) SetToken(t *oauth2.Token) (err error) {
 	case *oauth2.Transport:
 		transport.Source = oauth2.ReuseTokenSource(t, op.config.TokenSource(op.ctx, t))
 		return nil
+	case *TokenTransport:
+		return fmt.Errorf("Invalid transport type: %T", transport)
+	default:
+		op.client.Client.Transport = &oauth2.Transport{
+			Base:   transport,
+			Source: oauth2.ReuseTokenSource(t, op.config.TokenSource(op.ctx, t)),
+		}
 	}
 	return nil
 }

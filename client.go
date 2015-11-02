@@ -6,7 +6,6 @@ import (
 
 	"github.com/koofr/go-httpclient"
 	"github.com/koofr/go-koofrclient/auth"
-	"golang.org/x/oauth2"
 )
 
 type KoofrClient struct {
@@ -51,15 +50,6 @@ func (c *KoofrClient) GetToken() string {
 
 	// if not using token transport, return empty string (cannot return error because this would break API)
 	return ""
-}
-
-func (c *KoofrClient) GetOAuth2Token() (*oauth2.Token, error) {
-	switch t := c.Client.Transport.(type) {
-	case *oauth2.Transport:
-		return t.Source.Token()
-	}
-
-	return nil, fmt.Errorf("Not using oauth2")
 }
 
 func (c *KoofrClient) Authenticate(email string, password string) (err error) {
