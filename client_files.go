@@ -256,6 +256,9 @@ func (c *KoofrClient) FilesPutOptions(mountId string, path string, name string, 
 		if putFilter.NoRename {
 			params.Set("autorename", "false")
 		}
+		if putFilter.ForceOverwrite {
+			params.Set("overwrite", "true")
+		}
 	}
 
 	request := httpclient.RequestData{

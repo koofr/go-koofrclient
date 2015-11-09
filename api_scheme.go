@@ -124,6 +124,7 @@ type PutFilter struct {
 	Hash              *string
 	IgnoreNonExisting bool
 	NoRename          bool
+	ForceOverwrite    bool
 }
 
 type DeleteFilter struct {
