@@ -36,7 +36,9 @@ func (op *OAuth2Provider) SetClient(c *httpclient.HTTPClient) {
 		AuthURL:  fmt.Sprintf("%s/oauth2/auth", c.BaseURL.String()),
 		TokenURL: fmt.Sprintf("%s/oauth2/token", c.BaseURL.String()),
 	}
-	op.ctx = context.WithValue(oauth2.NoContext, oauth2.HTTPClient, c.Client)
+	ctxClient := &http.Client{}
+	op.ctx = context.WithValue(oauth2.NoContext, oauth2.HTTPClient, ctxClient)
+
 	return
 }
 
