@@ -36,7 +36,19 @@ func (op *OAuth2Provider) SetClient(c *httpclient.HTTPClient) {
 		AuthURL:  fmt.Sprintf("%s/oauth2/auth", c.BaseURL.String()),
 		TokenURL: fmt.Sprintf("%s/oauth2/token", c.BaseURL.String()),
 	}
-	op.ctx = context.WithValue(oauth2.NoContext, oauth2.HTTPClient, c.Client)
+
+	var baseTransport http.RoundTripper
+
+	switch tr := op.client.Client.Transport.(type) {
+	case *oauth2.Transport:
+		baseTransport = tr.Base
+	}
+
+	hc := http.Client{
+		Transport: baseTransport,
+	}
+
+	op.ctx = context.WithValue(oauth2.NoContext, hc, c.Client)
 
 	return
 }
