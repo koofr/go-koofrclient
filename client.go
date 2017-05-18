@@ -2,14 +2,16 @@ package koofrclient
 
 import (
 	"fmt"
-	"github.com/koofr/go-httpclient"
 	"net/http"
 	"net/url"
+
+	"github.com/koofr/go-httpclient"
 )
 
 type KoofrClient struct {
 	*httpclient.HTTPClient
-	token string
+	token  string
+	userID string
 }
 
 func NewKoofrClient(baseUrl string, disableSecurity bool) *KoofrClient {
@@ -27,7 +29,11 @@ func NewKoofrClient(baseUrl string, disableSecurity bool) *KoofrClient {
 
 	httpClient.Headers.Set("User-Agent", "go koofrclient")
 
-	return &KoofrClient{httpClient, ""}
+	return &KoofrClient{
+		HTTPClient: httpClient,
+		token:      "",
+		userID:     "",
+	}
 }
 
 func (c *KoofrClient) SetUserAgent(ua string) {
@@ -41,6 +47,14 @@ func (c *KoofrClient) SetToken(token string) {
 
 func (c *KoofrClient) GetToken() string {
 	return c.token
+}
+
+func (c *KoofrClient) SetUserID(userID string) {
+	c.userID = userID
+}
+
+func (c *KoofrClient) GetUserID() string {
+	return c.userID
 }
 
 func (c *KoofrClient) Authenticate(email string, password string) (err error) {
@@ -62,13 +76,14 @@ func (c *KoofrClient) Authenticate(email string, password string) (err error) {
 		RespValue:      &tokenResponse,
 	}
 
-	_, err = c.Request(&request)
+	res, err := c.Request(&request)
 
 	if err != nil {
 		return
 	}
 
 	c.SetToken(tokenResponse.Token)
+	c.SetUserID(res.Header.Get("X-User-ID"))
 
 	return
 }
