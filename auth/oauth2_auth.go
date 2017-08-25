@@ -46,7 +46,7 @@ func (op *OAuth2Provider) SetClient(c *httpclient.HTTPClient) {
 		baseTransport = tr
 	}
 
-	hc := http.Client{
+	hc := &http.Client{
 		Transport: baseTransport,
 	}
 
