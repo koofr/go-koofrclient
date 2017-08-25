@@ -42,6 +42,8 @@ func (op *OAuth2Provider) SetClient(c *httpclient.HTTPClient) {
 	switch tr := op.client.Client.Transport.(type) {
 	case *oauth2.Transport:
 		baseTransport = tr.Base
+	case *http.Transport:
+		baseTransport = tr
 	}
 
 	hc := http.Client{
