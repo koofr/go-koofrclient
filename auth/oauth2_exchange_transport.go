@@ -26,7 +26,7 @@ func (t *OAuth2ExchangeTransport) RoundTrip(req *http.Request) (resp *http.Respo
 
 	resp, err = t.Base.RoundTrip(req)
 
-	if req.URL.Path == "/oauth2/token" {
+	if err == nil && req.URL.Path == "/oauth2/token" {
 		body, err := ioutil.ReadAll(io.LimitReader(resp.Body, 1<<20))
 		if err != nil {
 			return nil, fmt.Errorf("oauth2: cannot fetch token: %v", err)
