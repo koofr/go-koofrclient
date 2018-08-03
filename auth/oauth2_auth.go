@@ -47,7 +47,7 @@ func (op *OAuth2Provider) SetClient(c *httpclient.HTTPClient) {
 	}
 
 	hc := &http.Client{
-		Transport: &OAuth2ExchangeTransport{Base: baseTransport},
+		Transport: baseTransport,
 	}
 
 	op.ctx = context.WithValue(oauth2.NoContext, oauth2.HTTPClient, hc)
