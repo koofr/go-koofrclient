@@ -6,7 +6,7 @@ import (
 
 	"github.com/koofr/go-httpclient"
 	"golang.org/x/net/context"
-	"golang.org/x/oauth2"
+	"github.com/koofr/oauth2"
 )
 
 type CodeCallback func(authUrl string) (code string)
