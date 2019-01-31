@@ -171,3 +171,47 @@ type User struct {
 	LastName  string `json:"lastName"`
 	Email     string `json:"email"`
 }
+
+type Shared struct {
+	Name        string    `json:name`
+	Type        MountType `json:type`
+	Modified    int64     `json:modified`
+	Size        int64     `json:size`
+	ContentType string    `json:contentType`
+	Hash        string    `json:hash`
+	Mount       Mount     `json:mount`
+	Link        Link      `json:link`
+	Receiver    Receiver  `json:receiver`
+}
+
+type Link struct {
+	Id               string `json:id`
+	Name             string `json:name`
+	Path             string `json:path`
+	Counter          int64  `json:counter`
+	Url              string `json:url`
+	ShortUrl         string `json:shortUrl`
+	Hash             string `json:hash`
+	Host             string `json:host`
+	HasPassword      bool   `json:hasPassword`
+	Password         string `json:password`
+	ValidFrom        int64  `json:validFrom`
+	ValidTo          int64  `json:validTo`
+	PasswordRequired bool   `json:passwordRequired`
+}
+
+type Receiver struct {
+	Id          string `json:id`
+	Name        string `json:name`
+	Path        string `json:path`
+	Counter     int64  `json:counter`
+	Url         string `json:url`
+	ShortUrl    string `json:shortUrl`
+	Hash        string `json:hash`
+	Host        string `json:host`
+	HasPassword bool   `json:hasPassword`
+	Password    string `json:password`
+	ValidFrom   int64  `json:validFrom`
+	ValidTo     int64  `json:validTo`
+	Alert       bool   `json:alert`
+}
