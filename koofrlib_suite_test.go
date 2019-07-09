@@ -1,16 +1,19 @@
 package koofrclient_test
 
 import (
+	"os"
+	"strings"
+	"testing"
+
 	k "github.com/koofr/go-koofrclient"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"os"
-	"testing"
 )
 
 var (
 	client         *k.KoofrClient
 	apiBase        string
+	rootPath       string
 	email          string
 	password       string
 	defaultMountId string
@@ -22,6 +25,14 @@ func TestKoofrclient(t *testing.T) {
 	apiBase = os.Getenv("KOOFR_APIBASE")
 	if apiBase == "" {
 		t.Fatal("Missing KOOFR_APIBASE")
+	}
+
+	rootPath = os.Getenv("KOOFR_ROOTPATH")
+	if rootPath == "" {
+		t.Fatal("Missing KOOFR_ROOTPATH")
+	}
+	if !strings.HasPrefix(rootPath, "/") {
+		rootPath = "/" + rootPath
 	}
 
 	email = os.Getenv("KOOFR_EMAIL")
