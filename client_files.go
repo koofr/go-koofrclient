@@ -152,8 +152,8 @@ func (c *KoofrClient) FilesNewFolder(mountId string, path string, name string) (
 	return
 }
 
-func (c *KoofrClient) FilesCopy(mountId string, path string, toMountId string, toPath string) (err error) {
-	reqData := FileCopy{toMountId, toPath}
+func (c *KoofrClient) FilesCopy(mountId string, path string, toMountId string, toPath string, options CopyOptions) (err error) {
+	reqData := FileCopy{toMountId, toPath, options.SetModified}
 
 	params := url.Values{}
 	params.Set("path", path)
