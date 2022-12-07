@@ -58,7 +58,6 @@ type MountPermissions struct {
 	Mount          bool `json:"MOUNT"`
 	CreateReceiver bool `json:"CREATE_RECEIVER"`
 	CreateLink     bool `json:"CREATE_LINK"`
-	CreateAction   bool `json:"CREATE_ACTION"`
 	Comment        bool `json:"COMMENT"`
 }
 
